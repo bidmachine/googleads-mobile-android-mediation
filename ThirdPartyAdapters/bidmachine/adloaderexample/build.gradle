@@ -1,0 +1,46 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
+
+android {
+    namespace 'io.bidmachine.adloaderexample'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'com.weather.Weather'
+        minSdk 23
+        targetSdk 34
+        versionCode 1
+        versionName '1.0'
+        // Ad Manager app ID of the publisher whose mediation configuration Google should apply.
+        // Pass the real one with -PadManagerAppId=ca-app-pub-...~...; the default is Google's
+        // sample app ID, which initialises the SDK but carries no BidMachine mapping.
+        manifestPlaceholders = [
+            adManagerAppId: project.findProperty('adManagerAppId') ?: 'ca-app-pub-3940256099942544~3347511713'
+        ]
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_11.toString()
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+}
+
+dependencies {
+    // The adapter is built from the sources in this repository, as publishers consume it.
+    implementation project(':bidmachine')
+    implementation 'com.google.android.gms:play-services-ads:24.9.0'
+    implementation 'io.bidmachine:ads:3.5.1'
+    implementation 'androidx.core:core-ktx:1.13.1'
+}

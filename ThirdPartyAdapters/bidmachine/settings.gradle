@@ -19,3 +19,4 @@ rootProject.name = "bidmachine"
 include ':bidmachine'
 include 'adaptertestkit'
 project(":adaptertestkit").projectDir = file("../adaptertestkit")
+include ':adloaderexample'
