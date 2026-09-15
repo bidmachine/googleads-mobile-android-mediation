@@ -26,8 +26,8 @@ import com.google.android.gms.ads.nativead.NativeAd
  */
 class AdLoaderBannerActivity : Activity() {
 
-  /** The publisher's home screen unit, which carries the BidMachine banner mapping. */
-  private val adUnitId = "/7646/app_android_us/thr_display/home_screen/today"
+  /** The publisher's daily details banner unit, which carries the BidMachine banner mapping. */
+  private val adUnitId = "/7646/app_android_us/thr_display/details/daily_fri1"
 
   /**
    * What the request offers Google. The first entry is the primary size: Google puts it on the

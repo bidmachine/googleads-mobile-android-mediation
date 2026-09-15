@@ -13,11 +13,11 @@ android {
         targetSdk 34
         versionCode 1
         versionName '1.0'
-        // Ad Manager app ID of the publisher whose mediation configuration Google should apply.
-        // Pass the real one with -PadManagerAppId=ca-app-pub-...~...; the default is Google's
-        // sample app ID, which initialises the SDK but carries no BidMachine mapping.
+        // Ad Manager app ID of the publisher whose mediation configuration Google applies: The
+        // Weather Channel's Android app. Override with -PadManagerAppId=ca-app-pub-...~... to test
+        // another publisher.
         manifestPlaceholders = [
-            adManagerAppId: project.findProperty('adManagerAppId') ?: 'ca-app-pub-3940256099942544~3347511713'
+            adManagerAppId: project.findProperty('adManagerAppId') ?: 'ca-app-pub-1106337062030359~5027352122'
         ]
     }
 
@@ -43,4 +43,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-ads:24.9.0'
     implementation 'io.bidmachine:ads:3.5.1'
     implementation 'androidx.core:core-ktx:1.13.1'
+    // The BidMachine SDK reads the install referrer when the library is present, as it is in the
+    // publisher's app.
+    implementation 'com.android.installreferrer:installreferrer:2.2'
 }

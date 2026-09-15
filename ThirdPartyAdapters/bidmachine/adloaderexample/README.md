@@ -36,16 +36,17 @@ as the adapter declares them.
 1. Build from `ThirdPartyAdapters/bidmachine` with a JDK 17:
 
    ```
-   ./gradlew :adloaderexample:assembleDebug -PadManagerAppId=ca-app-pub-XXXX~YYYY
+   ./gradlew :adloaderexample:assembleDebug
    ```
 
-   `adManagerAppId` is the publisher's Ad Manager app ID, which decides the mediation
-   configuration Google applies to the unit. Without it the build uses Google's sample app ID:
-   the SDK initialises, but the unit carries no BidMachine mapping.
-2. `adUnitId` in `AdLoaderBannerActivity.kt` is the publisher's Android home screen unit,
-   `/7646/app_android_us/thr_display/home_screen/today`; the test unit is
-   `/7646/test_app_android_us/thr_display/home_screen/today`. The application ID is the
-   publisher's package name so Google treats the requests as theirs.
+   `adManagerAppId` decides the mediation configuration Google applies to the unit. It defaults
+   to The Weather Channel's Android app ID, `ca-app-pub-1106337062030359~5027352122`; pass another
+   publisher's to test theirs.
+2. `adUnitId` in `AdLoaderBannerActivity.kt` is the publisher's daily details banner unit,
+   `/7646/app_android_us/thr_display/details/daily_fri1`. Their home screen unit is
+   `/7646/app_android_us/thr_display/home_screen/today`, with a test twin under
+   `/7646/test_app_android_us/`. The application ID is the publisher's package name,
+   `com.weather.Weather`, so Google treats the requests as theirs.
 3. Run on a device whose advertising ID is allowlisted for BidMachine test bidders. The app logs
    it at start (`GAID …`); use it for the allowlist and for the exchange's per-IFA logging
    allocations.
