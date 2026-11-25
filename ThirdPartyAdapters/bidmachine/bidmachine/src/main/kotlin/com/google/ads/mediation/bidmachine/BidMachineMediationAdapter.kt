@@ -338,13 +338,9 @@ constructor(private val mediationUtils: MediationUtilsWrapper = MediationUtilsWr
     const val SDK_ERROR_DOMAIN = "io.bidmachine"
     const val WATERMARK_KEY = "google_watermark"
     @VisibleForTesting const val ERROR_MSG_MISSING_SOURCE_ID = "Source Id is missing or empty"
-    const val ERROR_CODE_NO_PLACEMENT_ID = 100
-    const val ERROR_MSG_NO_PLACEMENT_ID = "Invalid or empty placement id received."
     const val ERROR_CODE_NO_SUPPORTED_SIGNAL_CONFIGURATIONS = 101
     const val ERROR_MSG_NO_SUPPORTED_SIGNAL_CONFIGURATIONS =
       "Error during signal collection: No supported Signal Data Configuration found."
-    const val ERROR_CODE_INVALID_AD_FORMAT = 102
-    const val ERROR_MSG_INVALID_AD_FORMAT = "Invalid Ad Format received during signal collection."
     const val ERROR_CODE_INVALID_AD_SIZE = 103
     const val ERROR_MSG_INVALID_AD_SIZE =
       "Requested ad size could not be mapped to bidmachine.BannerAdSize"

@@ -26,6 +26,9 @@ import com.google.ads.mediation.adaptertestkit.FakeMediationAdLoadCallback
 import com.google.ads.mediation.adaptertestkit.FakeMediationBannerAdCallback
 import com.google.ads.mediation.adaptertestkit.assertThat
 import com.google.ads.mediation.adaptertestkit.createMediationBannerAdConfiguration
+import com.google.ads.mediation.bidmachine.BidMachineMediationAdapter.Companion.ADAPTER_ERROR_DOMAIN
+import com.google.ads.mediation.bidmachine.BidMachineMediationAdapter.Companion.ERROR_CODE_INVALID_AD_SIZE
+import com.google.ads.mediation.bidmachine.BidMachineMediationAdapter.Companion.ERROR_MSG_INVALID_AD_SIZE
 import com.google.ads.mediation.bidmachine.BidMachineMediationAdapter.Companion.PLACEMENT_ID_KEY
 import com.google.ads.mediation.bidmachine.BidMachineMediationAdapter.Companion.SDK_ERROR_DOMAIN
 import com.google.ads.mediation.bidmachine.BidMachineMediationAdapter.Companion.WATERMARK_KEY
@@ -93,6 +96,56 @@ class BidMachineBannerAdTest {
 
     assertThat(bannerAdSize).isEqualTo(BannerAdSize.adaptive(330, 60))
     assertThat(bannerAdSize.isAdaptive).isTrue()
+  }
+
+  @Test
+  fun newInstance_withFullWidthSize_invokesOnFailure() {
+    val adConfiguration =
+      createMediationBannerAdConfiguration(
+        context = context,
+        bidResponse = TEST_BID_RESPONSE,
+        adSize = AdSize(AdSize.FULL_WIDTH, 50),
+      )
+
+    val result = BidMachineBannerAd.newInstance(adConfiguration, bannerAdLoadCallback)
+
+    assertThat(result.isFailure).isTrue()
+    assertThat(bannerAdLoadCallback)
+      .hasFailedWith(
+        AdError(ERROR_CODE_INVALID_AD_SIZE, ERROR_MSG_INVALID_AD_SIZE, ADAPTER_ERROR_DOMAIN)
+      )
+  }
+
+  @Test
+  fun newInstance_withZeroSize_invokesOnFailure() {
+    val adConfiguration =
+      createMediationBannerAdConfiguration(
+        context = context,
+        bidResponse = TEST_BID_RESPONSE,
+        adSize = AdSize(0, 0),
+      )
+
+    val result = BidMachineBannerAd.newInstance(adConfiguration, bannerAdLoadCallback)
+
+    assertThat(result.isFailure).isTrue()
+    assertThat(bannerAdLoadCallback)
+      .hasFailedWith(
+        AdError(ERROR_CODE_INVALID_AD_SIZE, ERROR_MSG_INVALID_AD_SIZE, ADAPTER_ERROR_DOMAIN)
+      )
+  }
+
+  @Test
+  fun newInstance_withAutoHeight_mapsToAdaptiveSizeWithoutHeightLimit() {
+    val bannerAdSize = createBannerAd(AdSize(330, AdSize.AUTO_HEIGHT)).bannerAdSize
+
+    assertThat(bannerAdSize).isEqualTo(BannerAdSize.adaptive(330, 0))
+  }
+
+  @Test
+  fun newInstance_withZeroHeight_mapsToAdaptiveSizeWithoutHeightLimit() {
+    val bannerAdSize = createBannerAd(AdSize(330, 0)).bannerAdSize
+
+    assertThat(bannerAdSize).isEqualTo(BannerAdSize.adaptive(330, 0))
   }
 
   @Test

@@ -1,10 +1,13 @@
 ## BidMachine Android Mediation Adapter Changelog
 
-#### Version 4.0.0.0 (In progress)
+#### Version 4.0.0.0
 - Updated the adapter to use the `InitializationCompleteCallback.onInitializationFailed(AdError)` API.
 - Updated the minimum required Android API level to 24.
 - Verified compatibility with BidMachine SDK version 4.0.0.
 - Updated the adapter to use the new BidMachine SDK 4.0 API.
+- Non-standard banner sizes with a positive width now request adaptive banners
+  instead of the closest fixed size, including waterfall requests that previously
+  failed to match a fixed size. Served creative sizes may differ.
 
 Built and tested with:
 - Google Mobile Ads SDK version 25.5.0.

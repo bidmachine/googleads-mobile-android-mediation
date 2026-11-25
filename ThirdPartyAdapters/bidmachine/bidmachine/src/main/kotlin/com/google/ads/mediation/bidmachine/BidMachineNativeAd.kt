@@ -88,6 +88,14 @@ private constructor(
     bidMachineNativeAd?.unbind()
   }
 
+  override fun destroy() {
+    val nativeAd = bidMachineNativeAd
+    bidMachineNativeAd = null
+    nativeAdCallback = null
+    nativeAd?.setListener(null)
+    nativeAd?.destroy()
+  }
+
   override fun onAdPresented(ad: NativeAd) {
     // Google Mobile Ads SDK doesn't have a matching event.
   }
@@ -118,7 +126,10 @@ private constructor(
     nativeAd.getStarRating()?.let { starRating = it }
     nativeAd.getIcon()?.let { icon = NativeAdImage(it.getImage(), it.getLocalUri()) }
     setMediaView(nativeAd.getMediaView())
+    setHasVideoContent(nativeAd.hasVideoContent())
     adChoicesContent = nativeAd.getAdChoiceView()
+    overrideClickHandling = true
+    overrideImpressionRecording = true
   }
 
   private fun setWatermark(ad: Ad) {

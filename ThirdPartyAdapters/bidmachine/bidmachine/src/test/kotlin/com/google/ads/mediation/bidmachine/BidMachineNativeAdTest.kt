@@ -48,8 +48,10 @@ import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.same
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 @RunWith(AndroidJUnit4::class)
 class BidMachineNativeAdTest {
@@ -77,6 +79,7 @@ class BidMachineNativeAdTest {
       on { getStarRating() } doReturn TEST_STAR_RATING
       on { getIcon() } doReturn mockIcon
       on { getMediaView() } doReturn mediaView
+      on { hasVideoContent() } doReturn true
       on { getAdChoiceView() } doReturn adChoiceView
     }
 
@@ -122,6 +125,8 @@ class BidMachineNativeAdTest {
     verify(mockNativeAd as Ad).setExtras(eq(mapOf(WATERMARK_KEY to TEST_WATERMARK)))
     verify(mockNativeAd).setListener(same(bidMachineNativeAd))
     assertThat(nativeAdLoadCallback).hasSucceededWith(bidMachineNativeAd)
+    assertThat(bidMachineNativeAd.overrideClickHandling).isTrue()
+    assertThat(bidMachineNativeAd.overrideImpressionRecording).isTrue()
   }
 
   @Test
@@ -137,6 +142,16 @@ class BidMachineNativeAdTest {
     assertThat(bidMachineNativeAd.icon.uri).isEqualTo(iconUri)
     assertThat(bidMachineNativeAd.icon.scale).isEqualTo(1.0)
     assertThat(bidMachineNativeAd.adChoicesContent).isSameInstanceAs(adChoiceView)
+    assertThat(bidMachineNativeAd.hasVideoContent()).isTrue()
+  }
+
+  @Test
+  fun onAdLoaded_withoutVideo_setsHasVideoContentToFalse() {
+    whenever(mockNativeAd.hasVideoContent()).thenReturn(false)
+
+    bidMachineNativeAd.onAdLoaded(mockNativeAd)
+
+    assertThat(bidMachineNativeAd.hasVideoContent()).isFalse()
   }
 
   @Test
@@ -199,12 +214,32 @@ class BidMachineNativeAdTest {
     bidMachineNativeAd.untrackView(FrameLayout(context))
 
     verify(mockNativeAd).unbind()
+    verify(mockNativeAd, never()).destroy()
   }
 
   @Test
   fun trackAndUntrackViews_beforeLoad_doNotThrow() {
     bidMachineNativeAd.trackViews(FrameLayout(context), mapOf(), mapOf())
     bidMachineNativeAd.untrackView(FrameLayout(context))
+  }
+
+  // endregion
+
+  // region destroy tests
+  @Test
+  fun destroy_calledTwice_releasesNativeAdOnce() {
+    bidMachineNativeAd.onAdLoaded(mockNativeAd)
+
+    bidMachineNativeAd.destroy()
+    bidMachineNativeAd.destroy()
+
+    verify(mockNativeAd).setListener(null)
+    verify(mockNativeAd).destroy()
+  }
+
+  @Test
+  fun destroy_beforeLoad_doesNotThrow() {
+    bidMachineNativeAd.destroy()
   }
 
   // endregion
@@ -228,6 +263,20 @@ class BidMachineNativeAdTest {
     assertThat(nativeAdCallback.isClicked).isTrue()
     assertThat(nativeAdCallback.isOpened).isTrue()
     assertThat(nativeAdCallback.isLeftApplication).isTrue()
+  }
+
+  @Test
+  fun listenerEvents_afterDestroy_doNotInvokeCallbacks() {
+    bidMachineNativeAd.onAdLoaded(mockNativeAd)
+    bidMachineNativeAd.destroy()
+
+    bidMachineNativeAd.onAdImpression(mockNativeAd)
+    bidMachineNativeAd.onAdClicked(mockNativeAd)
+
+    assertThat(nativeAdCallback.isImpressionReported).isFalse()
+    assertThat(nativeAdCallback.isClicked).isFalse()
+    assertThat(nativeAdCallback.isOpened).isFalse()
+    assertThat(nativeAdCallback.isLeftApplication).isFalse()
   }
 
   @Test

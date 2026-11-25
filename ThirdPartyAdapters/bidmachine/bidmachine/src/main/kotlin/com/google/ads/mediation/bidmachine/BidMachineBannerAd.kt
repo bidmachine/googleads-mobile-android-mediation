@@ -14,7 +14,6 @@
 
 package com.google.ads.mediation.bidmachine
 
-import android.content.Context
 import android.view.View
 import androidx.annotation.VisibleForTesting
 import com.google.ads.mediation.bidmachine.BidMachineMediationAdapter.Companion.ADAPTER_ERROR_DOMAIN
@@ -100,11 +99,14 @@ internal constructor(
 
   companion object {
     fun mapAdSizeToBidMachineBannerAdSize(adSize: AdSize): BannerAdSize? {
+      if (adSize.width <= 0) {
+        return null
+      }
       return when (adSize) {
         AdSize.BANNER -> BannerAdSize.Banner
         AdSize.MEDIUM_RECTANGLE -> BannerAdSize.MediumRectangle
         AdSize.LEADERBOARD -> BannerAdSize.Leaderboard
-        else -> BannerAdSize.adaptive(adSize.width, adSize.height)
+        else -> BannerAdSize.adaptive(adSize.width, adSize.height.coerceAtLeast(0))
       }
     }
 
