@@ -32,11 +32,11 @@ import com.google.ads.mediation.adaptertestkit.createMediationInterstitialAdConf
 import com.google.ads.mediation.adaptertestkit.createMediationNativeAdConfiguration
 import com.google.ads.mediation.adaptertestkit.createMediationRewardedAdConfiguration
 import com.google.ads.mediation.bidmachine.BidMachineMediationAdapter.Companion.ADAPTER_ERROR_DOMAIN
-import com.google.ads.mediation.bidmachine.BidMachineMediationAdapter.Companion.ERROR_CODE_EMPTY_SIGNAL_CONFIGURATIONS
+import com.google.ads.mediation.bidmachine.BidMachineMediationAdapter.Companion.ERROR_CODE_NO_SUPPORTED_SIGNAL_CONFIGURATIONS
 import com.google.ads.mediation.bidmachine.BidMachineMediationAdapter.Companion.ERROR_CODE_INVALID_AD_FORMAT
 import com.google.ads.mediation.bidmachine.BidMachineMediationAdapter.Companion.ERROR_CODE_INVALID_AD_SIZE
 import com.google.ads.mediation.bidmachine.BidMachineMediationAdapter.Companion.ERROR_CODE_MISSING_SOURCE_ID
-import com.google.ads.mediation.bidmachine.BidMachineMediationAdapter.Companion.ERROR_MSG_EMPTY_SIGNAL_CONFIGURATIONS
+import com.google.ads.mediation.bidmachine.BidMachineMediationAdapter.Companion.ERROR_MSG_NO_SUPPORTED_SIGNAL_CONFIGURATIONS
 import com.google.ads.mediation.bidmachine.BidMachineMediationAdapter.Companion.ERROR_MSG_INVALID_AD_FORMAT
 import com.google.ads.mediation.bidmachine.BidMachineMediationAdapter.Companion.ERROR_MSG_INVALID_AD_SIZE
 import com.google.ads.mediation.bidmachine.BidMachineMediationAdapter.Companion.ERROR_MSG_MISSING_SOURCE_ID
@@ -81,7 +81,6 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
-import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
@@ -493,8 +492,8 @@ class BidMachineMediationAdapterTest {
     val signalCallbacks = FakeSignalCallbacks()
     val expectedAdError =
       AdError(
-        ERROR_CODE_EMPTY_SIGNAL_CONFIGURATIONS,
-        ERROR_MSG_EMPTY_SIGNAL_CONFIGURATIONS,
+        ERROR_CODE_NO_SUPPORTED_SIGNAL_CONFIGURATIONS,
+        ERROR_MSG_NO_SUPPORTED_SIGNAL_CONFIGURATIONS,
         ADAPTER_ERROR_DOMAIN,
       )
 
