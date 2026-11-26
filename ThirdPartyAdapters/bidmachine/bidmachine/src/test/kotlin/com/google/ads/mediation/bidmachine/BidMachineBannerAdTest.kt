@@ -26,9 +26,6 @@ import com.google.ads.mediation.adaptertestkit.FakeMediationAdLoadCallback
 import com.google.ads.mediation.adaptertestkit.FakeMediationBannerAdCallback
 import com.google.ads.mediation.adaptertestkit.assertThat
 import com.google.ads.mediation.adaptertestkit.createMediationBannerAdConfiguration
-import com.google.ads.mediation.bidmachine.BidMachineMediationAdapter.Companion.ADAPTER_ERROR_DOMAIN
-import com.google.ads.mediation.bidmachine.BidMachineMediationAdapter.Companion.ERROR_CODE_INVALID_AD_SIZE
-import com.google.ads.mediation.bidmachine.BidMachineMediationAdapter.Companion.ERROR_MSG_INVALID_AD_SIZE
 import com.google.ads.mediation.bidmachine.BidMachineMediationAdapter.Companion.PLACEMENT_ID_KEY
 import com.google.ads.mediation.bidmachine.BidMachineMediationAdapter.Companion.SDK_ERROR_DOMAIN
 import com.google.ads.mediation.bidmachine.BidMachineMediationAdapter.Companion.WATERMARK_KEY
@@ -46,6 +43,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.same
 import org.mockito.kotlin.verify
+import org.robolectric.annotation.Config
 
 @RunWith(AndroidJUnit4::class)
 class BidMachineBannerAdTest {
@@ -91,6 +89,7 @@ class BidMachineBannerAdTest {
   }
 
   @Test
+  @Config(qualifiers = "w360dp-h640dp-xhdpi")
   fun newInstance_withCustomSize_mapsToAdaptiveSize() {
     val bannerAdSize = createBannerAd(AdSize(330, 60)).bannerAdSize
 
@@ -99,39 +98,28 @@ class BidMachineBannerAdTest {
   }
 
   @Test
-  fun newInstance_withFullWidthSize_invokesOnFailure() {
-    val adConfiguration =
-      createMediationBannerAdConfiguration(
-        context = context,
-        bidResponse = TEST_BID_RESPONSE,
-        adSize = AdSize(AdSize.FULL_WIDTH, 50),
-      )
+  @Config(qualifiers = "w360dp-h640dp-xhdpi")
+  fun newInstance_withFullWidthSize_mapsToScreenWidthInDp() {
+    val bannerAdSize = createBannerAd(AdSize(AdSize.FULL_WIDTH, 50)).bannerAdSize
 
-    val result = BidMachineBannerAd.newInstance(adConfiguration, bannerAdLoadCallback)
-
-    assertThat(result.isFailure).isTrue()
-    assertThat(bannerAdLoadCallback)
-      .hasFailedWith(
-        AdError(ERROR_CODE_INVALID_AD_SIZE, ERROR_MSG_INVALID_AD_SIZE, ADAPTER_ERROR_DOMAIN)
-      )
+    assertThat(bannerAdSize).isEqualTo(BannerAdSize.adaptive(360, 50))
   }
 
   @Test
-  fun newInstance_withZeroSize_invokesOnFailure() {
-    val adConfiguration =
-      createMediationBannerAdConfiguration(
-        context = context,
-        bidResponse = TEST_BID_RESPONSE,
-        adSize = AdSize(0, 0),
-      )
+  @Config(qualifiers = "w360dp-h640dp-xhdpi")
+  fun newInstance_withZeroSize_mapsToScreenWidthWithoutHeightLimit() {
+    val bannerAdSize = createBannerAd(AdSize(0, 0)).bannerAdSize
 
-    val result = BidMachineBannerAd.newInstance(adConfiguration, bannerAdLoadCallback)
+    assertThat(bannerAdSize).isEqualTo(BannerAdSize.adaptive(360, 0))
+  }
 
-    assertThat(result.isFailure).isTrue()
-    assertThat(bannerAdLoadCallback)
-      .hasFailedWith(
-        AdError(ERROR_CODE_INVALID_AD_SIZE, ERROR_MSG_INVALID_AD_SIZE, ADAPTER_ERROR_DOMAIN)
-      )
+  @Test
+  @Config(qualifiers = "w360dp-h640dp-xhdpi")
+  fun newInstance_withFullWidthAndAutoHeight_mapsToScreenWidthWithoutHeightLimit() {
+    val bannerAdSize =
+      createBannerAd(AdSize(AdSize.FULL_WIDTH, AdSize.AUTO_HEIGHT)).bannerAdSize
+
+    assertThat(bannerAdSize).isEqualTo(BannerAdSize.adaptive(360, 0))
   }
 
   @Test
@@ -175,6 +163,17 @@ class BidMachineBannerAdTest {
 
     verify(mockBidMachineInstance)
       .loadBanner(eq(TEST_BID_RESPONSE), eq(BannerAdSize.Banner), same(bidMachineBannerAd))
+  }
+
+  @Test
+  @Config(qualifiers = "w360dp-h640dp-xhdpi")
+  fun loadRtbAd_withZeroSize_loadsBannerWithScreenWidth() {
+    val bannerAd = createBannerAd(AdSize(0, 0))
+
+    bannerAd.loadRtbAd(mockBidMachineInstance)
+
+    verify(mockBidMachineInstance)
+      .loadBanner(eq(TEST_BID_RESPONSE), eq(BannerAdSize.adaptive(360, 0)), same(bannerAd))
   }
 
   // endregion

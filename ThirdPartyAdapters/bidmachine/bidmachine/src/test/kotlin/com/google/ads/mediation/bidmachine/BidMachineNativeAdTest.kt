@@ -70,6 +70,13 @@ class BidMachineNativeAdTest {
       on { getImage() } doReturn iconDrawable
       on { getLocalUri() } doReturn iconUri
     }
+  private val mainImageDrawable = mock<Drawable>()
+  private val mainImageUri = Uri.parse("file:///cache/main.png")
+  private val mockMainImage =
+    mock<ImageData> {
+      on { getImage() } doReturn mainImageDrawable
+      on { getLocalUri() } doReturn mainImageUri
+    }
   private val mockNativeAd =
     mock<NativeAd> {
       on { getTitle() } doReturn TEST_TITLE
@@ -78,6 +85,7 @@ class BidMachineNativeAdTest {
       on { getAdvertiser() } doReturn TEST_ADVERTISER
       on { getStarRating() } doReturn TEST_STAR_RATING
       on { getIcon() } doReturn mockIcon
+      on { getMainImage() } doReturn mockMainImage
       on { getMediaView() } doReturn mediaView
       on { hasVideoContent() } doReturn true
       on { getAdChoiceView() } doReturn adChoiceView
@@ -141,8 +149,25 @@ class BidMachineNativeAdTest {
     assertThat(bidMachineNativeAd.icon.drawable).isSameInstanceAs(iconDrawable)
     assertThat(bidMachineNativeAd.icon.uri).isEqualTo(iconUri)
     assertThat(bidMachineNativeAd.icon.scale).isEqualTo(1.0)
+    assertThat(bidMachineNativeAd.images).hasSize(1)
+    val mainImage = bidMachineNativeAd.images.single()
+    assertThat(mainImage.drawable).isSameInstanceAs(mainImageDrawable)
+    assertThat(mainImage.uri).isEqualTo(mainImageUri)
+    assertThat(mainImage.scale).isEqualTo(1.0)
     assertThat(bidMachineNativeAd.adChoicesContent).isSameInstanceAs(adChoiceView)
     assertThat(bidMachineNativeAd.hasVideoContent()).isTrue()
+  }
+
+  @Test
+  fun onAdLoaded_withUriOnlyMainImage_mapsImageUri() {
+    whenever(mockMainImage.getImage()).thenReturn(null)
+
+    bidMachineNativeAd.onAdLoaded(mockNativeAd)
+
+    assertThat(bidMachineNativeAd.images).hasSize(1)
+    val mainImage = bidMachineNativeAd.images.single()
+    assertThat(mainImage.drawable).isNull()
+    assertThat(mainImage.uri).isEqualTo(mainImageUri)
   }
 
   @Test
@@ -172,6 +197,7 @@ class BidMachineNativeAdTest {
     assertThat(bidMachineNativeAd.advertiser).isNull()
     assertThat(bidMachineNativeAd.starRating).isNull()
     assertThat(bidMachineNativeAd.icon).isNull()
+    assertThat(bidMachineNativeAd.images).isNull()
     assertThat(nativeAdLoadCallback).hasSucceededWith(bidMachineNativeAd)
   }
 

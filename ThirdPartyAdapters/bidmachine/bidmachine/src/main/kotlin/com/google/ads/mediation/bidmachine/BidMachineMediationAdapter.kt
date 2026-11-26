@@ -341,9 +341,6 @@ constructor(private val mediationUtils: MediationUtilsWrapper = MediationUtilsWr
     const val ERROR_CODE_NO_SUPPORTED_SIGNAL_CONFIGURATIONS = 101
     const val ERROR_MSG_NO_SUPPORTED_SIGNAL_CONFIGURATIONS =
       "Error during signal collection: No supported Signal Data Configuration found."
-    const val ERROR_CODE_INVALID_AD_SIZE = 103
-    const val ERROR_MSG_INVALID_AD_SIZE =
-      "Requested ad size could not be mapped to bidmachine.BannerAdSize"
     const val ERROR_CODE_COULD_NOT_SHOW_FULLSCREEN_AD = 105
     const val ERROR_MSG_COULD_NOT_SHOW_FULLSCREEN_AD = "Fullscreen ad could not be shown."
     const val ERROR_CODE_MISSING_SOURCE_ID = 107

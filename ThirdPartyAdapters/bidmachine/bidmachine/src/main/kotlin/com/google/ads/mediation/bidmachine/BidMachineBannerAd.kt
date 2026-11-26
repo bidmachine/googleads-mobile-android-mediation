@@ -14,11 +14,9 @@
 
 package com.google.ads.mediation.bidmachine
 
+import android.content.Context
 import android.view.View
 import androidx.annotation.VisibleForTesting
-import com.google.ads.mediation.bidmachine.BidMachineMediationAdapter.Companion.ADAPTER_ERROR_DOMAIN
-import com.google.ads.mediation.bidmachine.BidMachineMediationAdapter.Companion.ERROR_CODE_INVALID_AD_SIZE
-import com.google.ads.mediation.bidmachine.BidMachineMediationAdapter.Companion.ERROR_MSG_INVALID_AD_SIZE
 import com.google.ads.mediation.bidmachine.BidMachineMediationAdapter.Companion.PLACEMENT_ID_KEY
 import com.google.ads.mediation.bidmachine.BidMachineMediationAdapter.Companion.SDK_ERROR_DOMAIN
 import com.google.ads.mediation.bidmachine.BidMachineMediationAdapter.Companion.WATERMARK_KEY
@@ -98,15 +96,18 @@ internal constructor(
   }
 
   companion object {
-    fun mapAdSizeToBidMachineBannerAdSize(adSize: AdSize): BannerAdSize? {
-      if (adSize.width <= 0) {
-        return null
-      }
+    fun mapAdSizeToBidMachineBannerAdSize(context: Context, adSize: AdSize): BannerAdSize {
       return when (adSize) {
         AdSize.BANNER -> BannerAdSize.Banner
         AdSize.MEDIUM_RECTANGLE -> BannerAdSize.MediumRectangle
         AdSize.LEADERBOARD -> BannerAdSize.Leaderboard
-        else -> BannerAdSize.adaptive(adSize.width, adSize.height.coerceAtLeast(0))
+        else -> {
+          val displayMetrics = context.resources.displayMetrics
+          val width =
+            if (adSize.width > 0) adSize.width
+            else (displayMetrics.widthPixels / displayMetrics.density).toInt()
+          BannerAdSize.adaptive(width, adSize.height.coerceAtLeast(0))
+        }
       }
     }
 
@@ -119,13 +120,8 @@ internal constructor(
       val watermark = mediationBannerAdConfiguration.watermark
       val placement =
         createPlacement(mediationBannerAdConfiguration.serverParameters.getString(PLACEMENT_ID_KEY))
-      val bannerAdSize = mapAdSizeToBidMachineBannerAdSize(adSize)
-      if (bannerAdSize == null) {
-        val adError =
-          AdError(ERROR_CODE_INVALID_AD_SIZE, ERROR_MSG_INVALID_AD_SIZE, ADAPTER_ERROR_DOMAIN)
-        mediationAdLoadCallback.onFailure(adError)
-        return Result.failure(NoSuchElementException(adError.message))
-      }
+      val bannerAdSize =
+        mapAdSizeToBidMachineBannerAdSize(mediationBannerAdConfiguration.context, adSize)
 
       return Result.success(
         BidMachineBannerAd(mediationAdLoadCallback, bidResponse, watermark, placement, bannerAdSize)

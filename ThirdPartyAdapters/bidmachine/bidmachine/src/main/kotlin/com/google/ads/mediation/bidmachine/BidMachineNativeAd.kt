@@ -125,6 +125,9 @@ private constructor(
     nativeAd.getAdvertiser()?.let { advertiser = it }
     nativeAd.getStarRating()?.let { starRating = it }
     nativeAd.getIcon()?.let { icon = NativeAdImage(it.getImage(), it.getLocalUri()) }
+    nativeAd.getMainImage()?.let {
+      images = listOf(NativeAdImage(it.getImage(), it.getLocalUri()))
+    }
     setMediaView(nativeAd.getMediaView())
     setHasVideoContent(nativeAd.hasVideoContent())
     adChoicesContent = nativeAd.getAdChoiceView()

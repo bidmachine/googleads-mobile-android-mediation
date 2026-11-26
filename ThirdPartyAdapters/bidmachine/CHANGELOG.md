@@ -4,15 +4,9 @@
 - Updated the adapter to use the `InitializationCompleteCallback.onInitializationFailed(AdError)` API.
 - Updated the minimum required Android API level to 24.
 - Verified compatibility with BidMachine SDK version 4.0.0.
-- Updated the adapter to use the new BidMachine SDK 4.0 API.
-- Non-standard banner sizes with a positive width now request adaptive banners
-  instead of the closest fixed size, including waterfall requests that previously
-  failed to match a fixed size. Served creative sizes may differ.
-
-Built and tested with:
-- Google Mobile Ads SDK version 25.5.0.
-- Google Mobile Ads Next-Gen SDK version 1.4.0.
-- BidMachine SDK version 4.0.0.
+- Updated non-standard banner sizes to use adaptive banners instead of the closest
+  fixed size. Requests with a non-positive width use the screen width in dp.
+- Added support for native ad main images.
 
 #### Version 3.8.0.1
 - Pin the adapter's Kotlin dependency to 1.9.0 (the min Kotlin version supported
